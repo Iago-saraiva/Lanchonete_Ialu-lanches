@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Pedidos - Ialú Lanches</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+.status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: capitalize; }
+.status-recebido { background-color: #FFEDD5; color: #9A3412; }
+.status-preparacao { background-color: #FEF3C7; color: #92400E; }
+.status-entrega { background-color: #DBEAFE; color: #1E40AF; }
+.status-entregue, .status-pronto { background-color: #D1FAE5; color: #065F46; }
+.status-cancelado { background-color: #FEE2E2; color: #B91C1C; }
+
+@media (max-width:1024px){
+    table thead { display:none; }
+    table, table tbody, table tr, table td { display:block; width:100%; }
+    table tbody tr { margin-bottom:1rem; border:1px solid #e5e7eb; border-radius:12px; padding:12px; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.05); }
+    table tbody td { text-align:left !important; padding:6px 8px; border:none !important; }
+    table tbody td::before { content: attr(data-label); font-weight:600; color:#374151; display:block; margin-bottom:2px; font-size:0.9rem; }
+}
+
+/* Overlay para desbloqueio de som */
+#overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; display: flex; align-items: center; justify-content: center;
+}
+#overlayContent {
+    background: white; padding: 2rem; border-radius: 12px; text-align: center;
+}
+</style>
+</head>
+<body class="bg-gray-50 font-sans">
+
+<!-- Overlay de desbloqueio -->
+<div id="overlay">
+  <div id="overlayContent">
+    <p class="mb-4 text-gray-800 font-semibold">Escolha um som para notificações de novos pedidos:</p>
+    <input type="file" id="escolherSomOverlay" accept="audio/*" class="border rounded p-2 mb-4 w-full sm:w-auto">
+    <p class="text-sm text-gray-500">Após escolher, o painel será carregado automaticamente.</p>
+  </div>
+</div>
+
+<!-- Painel de Pedidos -->
+<div class="container mx-auto p-4 sm:p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center">
+            <i class="fas fa-clipboard-list text-yellow-500 mr-3"></i> Painel de Pedidos
+        </h1>
+        <a href="/logout" class="bg-red-500 hover:bg-red-600 px-4 py-2 text-white rounded shadow">Sair</a>
+    </div>
+
+    <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Endereço</th>
+                    <th>Entrega</th>
+                    <th>Pagamento</th>
+                    <th>Total</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="orders-table-body" class="bg-white divide-y divide-gray-200">
+                <tr><td colspan="8" class="text-center py-6 text-gray-400">Carregando...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<audio id="notification-sound" preload="auto"></audio>
+
+<script>
+let lastOrderIds = [];
+let somSelecionado = null;
+let audioDesbloqueado = false;
+
+// Escolher som no overlay
+document.getElementById("escolherSomOverlay").addEventListener("change", (event) => {
+    const arquivo = event.target.files[0];
+    if (arquivo) {
+        somSelecionado = URL.createObjectURL(arquivo);
+        const audio = document.getElementById("notification-sound");
+        audio.src = somSelecionado;
+        audio.load();
+
+        // Desbloqueia o áudio com um play/pause
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+            audioDesbloqueado = true;
+            document.getElementById('overlay').style.display = 'none';
+            console.log("Áudio desbloqueado!");
+            initDashboard(); // inicia painel automaticamente
+        }).catch(err => console.log("Erro ao desbloquear áudio:", err));
+    }
+});
+
+// Carregar pedidos
+async function loadOrders() {
+    const res = await fetch('/api/pedidos');
+    if(res.status === 403){
+        alert("Sessão expirada! Faça login novamente.");
+        window.location.href = "/login";
+        return [];
+    }
+    return await res.json();
+}
+
+// Renderizar tabela
+function renderOrders(orders){
+    const tbody = document.getElementById('orders-table-body');
+    tbody.innerHTML = '';
+    if(!orders || orders.length===0){
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-gray-400">Nenhum pedido</td></tr>';
+        return;
+    }
+
+    orders.forEach(order=>{
+        let statusClass = '';
+        switch(order.status){
+            case 'recebido': statusClass='status-recebido'; break;
+            case 'preparacao': statusClass='status-preparacao'; break;
+            case 'entrega': statusClass='status-entrega'; break;
+            case 'entregue': statusClass='status-entregue'; break;
+            case 'cancelado': statusClass='status-cancelado'; break;
+            case 'pronto': statusClass='status-pronto'; break;
+            default: statusClass='status-recebido';
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td data-label="ID">#${order.id}</td>
+            <td data-label="Cliente">${order.cliente_nome}</td>
+            <td data-label="Endereço">${order.cliente_endereco||'Retirada'}</td>
+            <td data-label="Entrega">${order.tipo_entrega}</td>
+            <td data-label="Pagamento">${order.forma_pagamento}</td>
+            <td data-label="Total">R$ ${order.total.toFixed(2).replace('.',',')}</td>
+            <td data-label="Data">${order.data_pedido}</td>
+            <td data-label="Status">
+                <select onchange="updateStatus(${order.id}, this.value)" class="border rounded px-2 py-1 bg-white shadow-sm">
+                    <option value="recebido" ${order.status==='recebido'?'selected':''}>Recebido</option>
+                    <option value="preparacao" ${order.status==='preparacao'?'selected':''}>Em Preparação</option>
+                    <option value="entrega" ${order.status==='entrega'?'selected':''}>Saiu p/ Entrega</option>
+                    <option value="entregue" ${order.status==='entregue'?'selected':''}>Entregue</option>
+                    <option value="cancelado" ${order.status==='cancelado'?'selected':''}>Cancelado</option>
+                    <option value="pronto" ${order.status==='pronto'?'selected':''}>Pronto</option>
+                </select>
+                <span class="status-badge ${statusClass} ml-2">${order.status}</span>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Atualizar status
+async function updateStatus(id, status){
+    await fetch(`/api/pedidos/${id}/status`, {
+        method:'PUT',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({status})
+    });
+    initDashboard();
+}
+
+// Inicializar painel
+async function initDashboard(){
+    const orders = await loadOrders();
+    if(!orders) return;
+
+    const currentOrderIds = orders.map(o=>o.id);
+    const novosPedidos = currentOrderIds.filter(id => !lastOrderIds.includes(id));
+
+    // Tocar som se houver novos pedidos e áudio desbloqueado
+    if(novosPedidos.length>0 && lastOrderIds.length>0 && somSelecionado && audioDesbloqueado){
+        const audio = document.getElementById('notification-sound');
+        audio.play().catch(err => console.log("Erro ao tocar som:", err));
+    }
+
+    lastOrderIds = currentOrderIds;
+    renderOrders(orders);
+}
+
+// Atualização automática
+setInterval(()=>{initDashboard();},5000);
+</script>
+</body>
+</html>

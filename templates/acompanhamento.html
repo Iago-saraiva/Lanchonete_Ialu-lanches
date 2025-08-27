@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acompanhamento de Pedido - Ialú Lanches</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* Estilos para progress bar e cards */
+.progress-bar {
+    height: 8px;
+    transition: width 0.5s ease;
+    border-radius: 4px;
+}
+
+.status-card {
+    transition: all 0.3s ease;
+}
+
+.status-card.active {
+    transform: scale(1.05);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+}
+
+.order-item:hover {
+    transform: translateY(-2px);
+    transition: 0.2s;
+}
+
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+</style>
+</head>
+<body class="bg-gray-100 font-sans">
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-8">
+        <div class="flex items-center">
+            <i class="fas fa-hamburger text-3xl text-yellow-600 mr-3"></i>
+            <h1 class="text-2xl font-bold text-gray-800">Ialú Lanches</h1>
+        </div>
+        <a href="/">
+            <button class="bg-yellow-500 text-white px-4 py-2 rounded-full font-semibold hover:bg-yellow-600 transition">Voltar</button>
+        </a>
+    </header>
+
+    <!-- Search Section -->
+    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Acompanhe seu pedido</h2>
+        <p class="text-gray-600 mb-6">Digite o número do seu pedido para acompanhar o status</p>
+        <div class="flex flex-col md:flex-row gap-4">
+            <input type="text" id="orderIdInput" placeholder="Número do pedido (ex: 15)" 
+                class="flex-grow px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
+            <button id="searchButton" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-medium flex items-center justify-center">
+                <i class="fas fa-search mr-2"></i> Buscar
+            </button>
+        </div>
+        <div id="errorMessage" class="text-red-500 mt-4 hidden flex items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <span id="errorText">Pedido não encontrado. Verifique o número e tente novamente.</span>
+        </div>
+    </div>
+
+    <!-- Order Info -->
+    <div id="orderInfo" class="hidden"></div>
+
+    <!-- Help Section -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Precisa de ajuda?</h2>
+        <p class="text-gray-600 mb-4">Entre em contato conosco se tiver qualquer dúvida sobre seu pedido.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <a href="https://wa.me/5534997150281?" 
+                class="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-3 px-4 rounded-lg transition">
+                <i class="fab fa-whatsapp text-green-500 mr-2"></i> WhatsApp
+            </a>
+            <a href="tel:34999424253" 
+                class="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-3 px-4 rounded-lg transition">
+                <i class="fas fa-phone-alt text-yellow-500 mr-2"></i> (34) 9 9715-0281
+            </a>
+        </div>
+    </div>
+
+    <footer class="mt-8 text-center text-gray-500 text-sm">
+        <p>© 2023 Ialú Lanches. Todos os direitos reservados.</p>
+        <p class="mt-1">Seu pedido é muito importante para nós!</p>
+    </footer>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const orderIdInput = document.getElementById('orderIdInput');
+    const searchButton = document.getElementById('searchButton');
+    const errorMessage = document.getElementById('errorMessage');
+    const orderInfo = document.getElementById('orderInfo');
+
+    let refreshInterval = null;
+
+    function showError(message) {
+        errorMessage.classList.remove('hidden');
+        document.getElementById('errorText').textContent = message;
+    }
+
+    async function fetchAndDisplay(orderId) {
+        try {
+            const response = await fetch(`/api/pedidos/${orderId}?t=${Date.now()}`);
+            if (!response.ok) throw new Error('Pedido não encontrado');
+            const orderData = await response.json();
+            displayOrder(orderData);
+            errorMessage.classList.add('hidden');
+            orderInfo.classList.remove('hidden');
+        } catch (error) {
+            showError(error.message);
+            orderInfo.classList.add('hidden');
+            if (refreshInterval) clearInterval(refreshInterval);
+        }
+    }
+
+    function displayOrder(orderData) {
+        let progressPercentage = 25;
+        let statusText = "Recebido";
+
+        if (orderData.status) {
+            const status = orderData.status.toLowerCase();
+            if (status.includes("preparo") || status.includes("preparação")) { progressPercentage = 50; statusText="Em preparo"; }
+            else if (status.includes("caminho") || status.includes("entrega")) { progressPercentage=75; statusText="Saiu para entrega"; }
+            else if (status.includes("entregue") || status.includes("finalizado")) { progressPercentage=100; statusText="Entregue"; }
+            else if (status.includes("pronto para retirada") || status.includes("pronto" ) ) { progressPercentage=100; statusText="Pronto para retirada"; }
+        }
+
+        const dataPedido = orderData.data_pedido ? new Date(orderData.data_pedido).toLocaleString('pt-BR') : '--:--';
+
+        let itemsHTML = '';
+        if (orderData.itens && orderData.itens.length>0){
+            orderData.itens.forEach(item=>{
+                itemsHTML += `
+                <div class="order-item flex justify-between items-start p-3 border-b border-gray-100 hover:bg-gray-50 transition">
+                    <div>
+                        <h3 class="font-medium text-gray-800">${item.nome}</h3>
+                        <p class="text-sm text-gray-500">Qtd: ${item.quantidade}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-gray-800">R$ ${(item.preco_unitario).toFixed(2).replace('.',',')}</p>
+                    </div>
+                </div>
+                `;
+            });
+        } else itemsHTML = '<p class="text-gray-500 py-4">Nenhum item encontrado</p>';
+
+        orderInfo.innerHTML = `
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Pedido #${orderData.id}</h2>
+            <p class="text-gray-600 mb-4">Realizado em: ${dataPedido}</p>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                <div class="progress-bar bg-yellow-500" style="width:${progressPercentage}%"></div>
+            </div>
+            
+            <!-- Status Cards -->
+            <div class="grid grid-cols-4 gap-4 mb-6">
+                ${['Recebido','Em preparo','Saiu para entrega','Entregue'].map((status,i)=>{
+                    const percent = [25,50,75,100][i];
+                    const active = progressPercentage>=percent ? 'active bg-green-50 border-green-200':'bg-gray-50 border-gray-200';
+                    const color = progressPercentage>=percent ? 'bg-green-500 text-white':'bg-gray-300 text-white';
+                    return `<div class="status-card ${active} text-center p-3 rounded-lg border">
+                        <div class="w-12 h-12 ${color} rounded-full flex items-center justify-center mx-auto mb-2">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <p class="font-medium ${progressPercentage>=percent?'text-green-800':'text-gray-600'}">${status}</p>
+                    </div>`;
+                }).join('')}
+            </div>
+
+            <!-- Items -->
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                <h3 class="font-bold text-gray-800 mb-3">Itens do Pedido</h3>
+                ${itemsHTML}
+            </div>
+
+            <!-- Customer Info -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="font-bold text-gray-800 mb-3">Informações do Cliente</h3>
+                <p><span class="font-medium">Nome:</span> ${orderData.cliente_nome}</p>
+                <p><span class="font-medium">Telefone:</span> ${orderData.cliente_telefone || '--'}</p>
+                <p><span class="font-medium">Entrega:</span> ${orderData.tipo==='entrega'?'Entrega':'Retirada no local'}</p>
+                ${orderData.tipo==='entrega'?`<p><span class="font-medium">Endereço:</span> ${orderData.cliente_endereco}</p>`:''}
+                <p><span class="font-medium">Pagamento:</span> ${orderData.forma_pagamento || '--'}</p>
+            </div>
+        </div>
+        `;
+    }
+
+    function searchOrder(orderId){
+        if(refreshInterval) clearInterval(refreshInterval);
+        searchButton.innerHTML = '<span class="loading"></span> Buscando...';
+        searchButton.disabled = true;
+        fetchAndDisplay(orderId).then(()=> {
+            refreshInterval = setInterval(()=>fetchAndDisplay(orderId),5000);
+        }).finally(()=>{
+            searchButton.innerHTML = '<i class="fas fa-search mr-2"></i> Buscar';
+            searchButton.disabled=false;
+        });
+    }
+
+    // Eventos
+    searchButton.addEventListener('click',()=> {
+        const orderId = orderIdInput.value.trim();
+        if(orderId) searchOrder(orderId);
+        else showError('Digite o número do pedido');
+    });
+    orderIdInput.addEventListener('keypress',e=>{if(e.key==='Enter') searchButton.click();});
+
+    // Busca automática via URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderIdFromUrl = urlParams.get('pedido');
+    if(orderIdFromUrl){
+        orderIdInput.value=orderIdFromUrl;
+        searchOrder(orderIdFromUrl);
+    }
+});
+</script>
+</body>
+</html>

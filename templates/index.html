@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lanchonete Ialú_lanches - Cardápio Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f7f3;
+        }
+        
+        .menu-item {
+            transition: all 0.3s ease;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category-btn.active {
+            background-color: #f59e0b;
+            color: white;
+        }
+        
+        .cart-item {
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .floating-cart {
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-amber-600 text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold">🍔 Ialú lanches</h1>
+                    <p class="text-amber-100">Lanchonete Artesanal</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button id="cartBtn" class="bg-amber-700 hover:bg-amber-800 px-4 py-2 rounded-full flex items-center">
+                            <i class="fas fa-shopping-cart mr-2"></i>
+                            <span id="cartCount" class="bg-white text-amber-700 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">0</span>
+                        </button>
+                    </div>
+                    <button class="bg-white text-amber-700 px-4 py-2 rounded-full font-medium hover:bg-amber-50">
+                        <i class="fas fa-phone-alt mr-2"></i> (34) 9 9715-0281
+                    </button>
+                    <a href="/acompanhamento">
+                        <button class="bg-white text-amber-700 px-4 py-2 rounded-full font-medium hover:bg-amber-50">
+                            Acompanhe seu pedido
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <section class="bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl p-8 mb-10 text-white relative overflow-hidden">
+            <div class="relative z-10">
+                <h2 class="text-4xl font-bold mb-2">Cardápio Digital</h2>
+                <p class="text-xl mb-6">Sabores que encantam, preços que surpreendem!</p>
+                <div class="flex flex-wrap gap-4">
+                    <div class="bg-white bg-opacity-20 px-4 py-2 rounded-full flex items-center">
+                        <i class="fas fa-clock mr-2"></i> Aberto agora: 10h-22h
+                    </div>
+                    <div class="bg-white bg-opacity-20 px-4 py-2 rounded-full flex items-center">
+                        <i class="fas fa-motorcycle mr-2"></i> Delivery em 30min
+                    </div>
+                    <div class="bg-white bg-opacity-20 px-4 py-2 rounded-full flex items-center">
+                        <i class="fas fa-star mr-2"></i> 4.9 (1.234 avaliações)
+                    </div>
+                </div>
+            </div>
+            <div class="absolute -right-10 -bottom-10 opacity-20">
+                <i class="fas fa-hamburger text-9xl"></i>
+            </div>
+        </section>
+
+        <!-- Categories -->
+        <section class="mb-10">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Nossas Categorias</h2>
+            <div class="flex overflow-x-auto pb-4 space-x-2 scrollbar-hide">
+                <button class="category-btn whitespace-nowrap bg-white px-6 py-2 rounded-full shadow-sm hover:bg-amber-100 active" data-category="todos">
+                    <i class="fas fa-utensils mr-2"></i> Todos
+                </button>
+                <button class="category-btn whitespace-nowrap bg-white px-6 py-2 rounded-full shadow-sm hover:bg-amber-100" data-category="lanches">
+                    <i class="fas fa-hamburger mr-2"></i> Lanches
+                </button>
+                <button class="category-btn whitespace-nowrap bg-white px-6 py-2 rounded-full shadow-sm hover:bg-amber-100" data-category="pasteis">
+                    <i class="fas fa-glass-whiskey mr-2"></i> Pasteis
+                </button>
+                <button class="category-btn whitespace-nowrap bg-white px-6 py-2 rounded-full shadow-sm hover:bg-amber-100" data-category="porcoes">
+                    <i class="fas fa-drumstick-bite mr-2"></i> Porções
+                </button>
+                <button class="category-btn whitespace-nowrap bg-white px-6 py-2 rounded-full shadow-sm hover:bg-amber-100" data-category="sobremesas">
+                    <i class="fas fa-ice-cream mr-2"></i> Sobremesas
+                </button>
+                <button class="category-btn whitespace-nowrap bg-white px-6 py-2 rounded-full shadow-sm hover:bg-amber-100" data-category="bebidas">
+                    <i class="fas fa-glass-whiskey mr-2"></i> Bebidas
+                </button>
+                <button class="category-btn whitespace-nowrap bg-white px-6 py-2 rounded-full shadow-sm hover:bg-amber-100" data-category="cervejas">
+                    <i class="fas fa-glass-whiskey mr-2"></i> Cervejas
+                </button>
+            </div>
+        </section>
+
+        <!-- Search -->
+        <div class="mb-10 relative">
+            <input type="text" placeholder="Buscar no cardápio..." class="w-full px-6 py-4 rounded-full shadow-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+            <button class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-amber-500 text-white p-2 rounded-full hover:bg-amber-600">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+
+        <!-- Menu Items -->
+        <section>
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Nosso Cardápio</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Item 1 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="lanches">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="X-Salada" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 right-2 bg-amber-500 text-white px-2 py-1 rounded-full text-xs font-bold">RECOMENDADO</div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">X-Salada</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 16,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Pão, Maionese, Alface, Tomate, Milho, Batata palha, Hambúrguer, Presunto e Mussarela. </p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="text-gray-500 text-sm ml-1">(128)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="1" data-name="X-Salada" data-price="16.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="lanches">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="X-Dog" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">X-Dog</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 15,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Pão, Maionese, Alface, Tomate, Salsicha, Batata palha e Milho.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(256)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="2" data-name="X-Dog" data-price="15.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="lanches">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="X-Bacon" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">X-Bacon</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 18,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Pâo, Maionese, Alface, Tomate, Milho, Batata palha, Ovo, Bacon, Hambúrguer, Presunto e Mussarela.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(87)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="3" data-name="X-Bacon" data-price="18.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="lanches">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="X-Egg" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold">NOVO</div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">X-Egg</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 15.00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Pão, Mainonese, Alface, Tomate, Milho, 2 ovos, e Mussarela.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="text-gray-500 text-sm ml-1">(143)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="4" data-name="X-Egg" data-price="15.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 5 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="lanches">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="X-Tudo" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">X-Tudo</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 22,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Pão, Mainonese, Alface, Tomate, Batata-palha, Milho, Ovo, Salsicha, Bacon, Cheddar, Hámburguer, Presunto e Mussarela.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(92)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="5" data-name="X-Tudo" data-price="22.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 6 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="lanches">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="X-Ialu" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">X-Ialu</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 30,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Pão, Maionese, Alface, Tomate, Hamburguer, Presunto, Mussarela, 2 Ovos, 2 Salsichas, Bacon, Cheddar, Filé de Frango, Lombo, Batata Palha, Milho</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="6" data-name="X-Ialu" data-price="30.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 7 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="lanches">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="X-Franbacon" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">X-Franbacon</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 22,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Pão, Mainonese, Alface, Tomate, Batata-palha, Milho, Bacon,Filé de frango, Presunto e Mussarela</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="7" data-name="X-Franbacon" data-price="22.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 8 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="lanches">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="X-Lombo" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">X-Lombo</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 24,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Pão, Mainonese, Alface, Tomate, Batata-palha, Milho, Ovo, Bacon, Lombo, Presunto e Mussarela</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="8" data-name="X-Lombo" data-price="24.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- -----------------------------------------------------------------------------------------------Pasteis----------------------------------------------------------------------------------------------------- -->
+
+                <!-- Item 9 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="X-Ialu" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel Carne</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 14.00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="9" data-name="Pastel Carne" data-price="14.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 10 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastel Queijo" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel Queijo</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 14.00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="10" data-name="Pastel Queijo" data-price="14.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 11 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastel Presunto e Mussarela" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel Presunto e Mussarela</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 14,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="11" data-name="Pastel Presunto e Mussarela" data-price="14.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 12 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastel Carne e Queijo" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel Carne e Queijo</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 15,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="12" data-name="Pastel Carne e Queijo" data-price="15.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 13 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastel Mussarela c/ Calabresa" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel Mussarela c/ Calabresa</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 15,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="13" data-name="Pastel Mussarela c/ Calabresa" data-price="15.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 14 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastel Carne c/ Palmito" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel Carne c/ Palmito</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 15,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="14" data-name="Pastel Carne c/ Palmito" data-price="15.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 15 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastel Frango c/ Catupiry" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel Frango c/ Catupiry</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 15,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="15" data-name="Pastel Frango c/ Catupiry" data-price="15.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 16 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastel Frango c/ Bacon" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel Frango c/ Bacon</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 15,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="16" data-name="Pastel Frango c/ Bacon" data-price="15.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 17 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastel de Pizza" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel Pizza</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 15,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Presunto, Mussarela, Òregano, Tomate, Azeitona e Milho</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="17" data-name="Pastel Pizza" data-price="15.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 18 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastel Pastel 3 Sabores" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel 3 Sabores</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 15,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Carne moida, Mussarela e Bacon. </p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="18" data-name="Pastel 3 Sabores" data-price="15.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Item 19 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastel 3 Queijos" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel 3 Queijos</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 15,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Mussarela, Queijo e Catupiry.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="19" data-name="Pastel 3 Queijos" data-price="15.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Item 20 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastel Carne a moda da casa" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel Carne a moda da casa</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 16,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Carne moida, Mussarela, Palmito, Bacon e Tomate.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="20" data-name="Pastel 3 Sabores" data-price="16.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Item 21 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastel de Strogonoff" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel de Strogonoff</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 16,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Frango desfiado,  Milho, Creme de Leite e Azeitona.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="21" data-name="Pastel de Strogonoff" data-price="16.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Item 22 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastel Especial" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel Especial</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$18,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Mussarela, Catupiry, Bacon e Palmito.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="22" data-name="Pastel Especial" data-price="18.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Item 23 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastel de Costela" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastel de Costela</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 20,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Costela desfiada e Mussarela</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="23" data-name="Pastel de Costela" data-price="20.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Item 24 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="pasteis">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVsnxoBaeNq_JnCY1sRazSPAAL1DUBpArKGQ&s" alt="Pastelão Ialu" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Pastelão Ialu</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$22,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Carne moida,  Frango, Bacon, Azeitona, Mussarela, Presunto, Palmito, Orégano,
+                            Milho, Tomate e Catupiry.
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="24" data-name="Pastelão Ialu" data-price="22.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+<!-- -----------------------------------------------------------------------------------------------Porções----------------------------------------------------------------------------------------------------- -->
+
+                <!-- Item 25 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="porcoes">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1703695425456-24968ee6ab0c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjMzfHxwb3IlQzMlQTclQzMlQTNvJTIwZGUlMjBiYXRhdGElMjBmcml0YXxlbnwwfHwwfHx8MA%3D%3D" alt="Porção de Batata Frita" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Porção de Batata Frita</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 35,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Batata, Bacon e Cheddar.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="25" data-name="Porção de Batata Frita" data-price="35.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Item 26 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="porcoes">
+                    <div class="relative">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTW6ce2OvWOzQEbENhmF8iVAdodnjalk-z-eRXt8On4HeOGuTvGlRrCDfKa1cgQD6yUkY4&usqp=CAU" alt="Porção de Almondega c/ Mandioca" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Porção de Almondega c/ Mandioca</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 45,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="26" data-name="Porção de Almondega c/ Mandioca" data-price="45.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Item 27 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="porcoes">
+                    <div class="relative">
+                        <img src="https://uploads.metroimg.com/wp-content/uploads/2016/10/06182042/batata2.jpg" alt="Torre de Batata Média" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Torre de Batata Média</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 70,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Batata, Calabresa, Catupiry, Bacon, Mussarela e Cheddar.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="27" data-name="Torre de Batata Média" data-price="70.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Item 28 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="porcoes">
+                    <div class="relative">
+                        <img src="https://uploads.metroimg.com/wp-content/uploads/2016/10/06182042/batata2.jpg" alt="Torre de Batata Grande" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Torre de Batata Grande</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 96,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="26" data-name="Torre de Batata Grande" data-price="96.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+<!-- -----------------------------------------------------------------------------------------------Bebidas----------------------------------------------------------------------------------------------------- -->
+
+                <!-- Item 29 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="bebidas">
+                    <div class="relative">
+                        <img src="https://assets.jokrtech.com/small_PROD_150304009_P1_121ce2293c.png" style="width: auto; height: auto;" alt="Coca cola 2lt" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Coca cola 2lt</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 12,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="29" data-name="Coca cola 2lt" data-price="12.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 30 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="bebidas">
+                    <div class="relative">
+                        <img src="https://covabra.vtexassets.com/arquivos/ids/309281-800-450?v=638853856741870000&width=800&height=450&aspect=true" alt="Coca cola 1lt" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Coca cola 1lt</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 8,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="30" data-name="Coca cola 1lt" data-price="8.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 31 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="bebidas">
+                    <div class="relative">
+                        <img src="https://cdn.awsli.com.br/800x800/1847/1847175/produto/94341333/364c5bdfdd.jpg" style="width: auto; height: auto;" alt="Fanta 2lt" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Fanta 2lt</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 12,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="31" data-name="Fanta 2lt" data-price="12.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 32 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="bebidas">
+                    <div class="relative">
+                        <img src="https://images.tcdn.com.br/img/img_prod/1115696/agua_crystal_sem_gas_pet_500ml_63_1_75a2cb5f43dd7376602c8170098c89bf.png" style="width: auto; height: auto;" alt="Àgua c/ gás 500ml" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Àgua c/ gás 500ml</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 4,50</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="32" data-name="Àgua c/ gás 500ml" data-price="4.50">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 33 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="bebidas">
+                    <div class="relative">
+                        <img src="https://andinacocacola.vtexassets.com/arquivos/ids/157883/113325_COCA---Crystal500ml-SemGas.jpg?v=638412015595530000" style="width: auto; height: auto;" alt="Àgua s/ gás 500ml" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Àgua s/ gás 500ml</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 3,50</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="33" data-name="Àgua s/ gás 500ml" data-price="3.50">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+<!-- -----------------------------------------------------------------------------------------------Refrigerante Lata----------------------------------------------------------------------------------------------------- -->
+
+                <!-- Item 34 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="bebidas">
+                    <div class="relative">
+                        <img src="https://carrefourbrfood.vtexassets.com/arquivos/ids/18904046/coca-cola-310ml-1.jpg?v=637590218201970000" style="width: auto; height: auto;" alt="Coca cola lata 310ml" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Coca cola lata 310ml</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 5,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="34" data-name="Coca cola lata 310ml" data-price="5.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 35 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="bebidas">
+                    <div class="relative">
+                        <img src="https://mambodelivery.vtexassets.com/arquivos/ids/178859-800-450?v=637883917231530000&width=800&height=450&aspect=true" alt="Coca cola 0 lata 310ml" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Coca cola 0 lata 310ml</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 5,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="35" data-name="Coca cola lata 0 310ml" data-price="5.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 36 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="bebidas">
+                    <div class="relative">
+                        <img src="https://paguemenos.vtexassets.com/arquivos/ids/852687/refrigerante-fanta-laranja-lata-310ml-principal.jpg?v=638512254502070000" style="width: auto; height: auto;" alt="Fanta lata 310ml" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Fanta lata 310ml</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 5,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="36" data-name="Fanta lata 310ml" data-price="5.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 37 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="bebidas">
+                    <div class="relative">
+                        <img src="https://www.bernardaoemcasa.com.br/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/w/h/whatsapp_image_2024-08-13_at_13.15.05.jpeg" style="width: auto; height: auto;" alt="Sprite lata 310ml" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Sprite lata 310ml</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 5,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="37" data-name="Sprite 310ml" data-price="5.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+<!-- -----------------------------------------------------------------------------------------------Cervejas----------------------------------------------------------------------------------------------------- -->
+
+                <!-- Item 34 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="cervejas">
+                    <div class="relative">
+                        <img src="https://m.media-amazon.com/images/I/61K2aJcVgoL.jpg" style="width: auto; height: auto;" alt="Antarctica lata 310ml" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Antarctica lata 350ml</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 5,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="38" data-name="Antarctica lata 310ml" data-price="5.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 35 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="cervejas">
+                    <div class="relative">
+                        <img src="https://choppbrahmaexpress.vtexassets.com/arquivos/ids/157312-800-auto?v=638842261015830000&width=800&height=auto&aspect=true" style="width: auto; height: auto;" alt="Skol 310ml" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Skol lata 350ml</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 5,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="39" data-name="Skol 310ml" data-price="5.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 40 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="cervejas">
+                    <div class="relative">
+                        <img src="https://mercantilatacado.vtexassets.com/arquivos/ids/168508-800-auto?v=638338381590100000&width=800&height=auto&aspect=true" style="width: auto; height: auto;" alt="Brahma lata 310ml" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Brahma lata 350ml</h3>
+                            <span class="text-amber-600 font-bold text-lg">R$ 5,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="40" data-name="Brahma lata 310ml" data-price="5.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 37 -->
+                <div class="menu-item bg-white rounded-xl overflow-hidden shadow-md" data-category="cervejas">
+                    <div class="relative">
+                        <img src="https://bretas.vtexassets.com/arquivos/ids/201470/65730b7cdddb07d995cdafa6.jpg?v=638376352001470000" style="width: auto; height: auto;" alt="Kaiser lata 310ml" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Kaiser lata 350ml</h3>
+
+
+                            <span class="text-amber-600 font-bold text-lg">R$ 5,00</span>
+                        </div>
+                        <p class="text-gray-600 mb-4"></p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="text-gray-500 text-sm ml-1">(76)</span>
+                            </div>
+                            <button class="add-to-cart bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full flex items-center transition-colors" data-id="41" data-name="Kaiser 310ml" data-price="5.00">
+                                <i class="fas fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating Cart -->
+    <div id="cartPanel" class="fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Seu Pedido</h2>
+                <button id="closeCart" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div id="cartItems" class="mb-6">
+                <!-- Cart items will be added here dynamically -->
+                <div class="text-center py-10 text-gray-500">
+                    <i class="fas fa-shopping-cart text-4xl mb-4"></i>
+                    <p>Seu carrinho está vazio</p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 pt-4 mb-4">
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-600">Subtotal:</span>
+                    <span id="subtotal" class="font-bold">R$ 0,00</span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-600">Taxa de entrega:</span>
+                    <span id="deliveryFee" class="font-bold">R$ 5,00</span>
+                </div>
+                <div class="flex justify-between text-lg font-bold">
+                    <span>Total:</span>
+                    <span id="total">R$ 5,00</span>
+                </div>
+            </div>
+            
+            <button id="checkoutBtn" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-full font-bold text-lg flex items-center justify-center">
+                <i class="fas fa-credit-card mr-2"></i> Finalizar Pedido
+            </button>
+            
+            <p class="text-center text-sm text-gray-500 mt-4">
+                Aceitamos todas as formas de pagamento
+            </p>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Ialú_lanches</h3>
+                    <p class="text-gray-300">A melhor lanchonete da região, com ingredientes frescos e preparo artesanal.</p>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Horário de Funcionamento</h3>
+                    <ul class="space-y-2">
+                        <li class="flex justify-between">
+                            <span>Segunda a Sexta</span>
+                            <span>17:30h - 22h</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Sábado</span>
+                            <span>17:30h - 23:30h</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Domingo</span>
+                            <span>17:30h - 23:30h</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Contato</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2 text-amber-400"></i>
+                            <span>Av. Sebastião Ferreira Pinto, -Salomão Drumond </span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone-alt mr-2 text-amber-400"></i>
+                            <span><a href="https://wa.me/5534997150281?text=Ol%C3%A1,%20tudo%20bem?%0A">(34) 9 9715-0281</a></span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-amber-400"></i>
+                            <span><a href="mailto:iagosaraiva396@gmail.com">iagosaraiva396@gmail.com</a></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                <p>&copy; 2024 Ialú_lanches. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Seletores
+        const cartBtn = document.getElementById('cartBtn');
+        const closeCart = document.getElementById('closeCart');
+        const cartPanel = document.getElementById('cartPanel');
+        const overlay = document.getElementById('overlay');
+        const cartCount = document.getElementById('cartCount');
+        const cartItems = document.getElementById('cartItems');
+        const subtotal = document.getElementById('subtotal');
+        const total = document.getElementById('total');
+        const deliveryFee = document.getElementById('deliveryFee');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        const addToCartButtons = document.querySelectorAll('.add-to-cart');
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const menuItems = document.querySelectorAll('.menu-item');
+
+        let cart = [];
+        let tipoPedidoSelecionado = null; // "entrega" ou "retirada"
+
+        // Abrir/fechar carrinho
+        cartBtn.addEventListener('click', () => {
+            cartPanel.classList.remove('translate-x-full');
+            overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+
+        closeCart.addEventListener('click', () => {
+            cartPanel.classList.add('translate-x-full');
+            overlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        });
+
+        overlay.addEventListener('click', () => {
+            cartPanel.classList.add('translate-x-full');
+            overlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        });
+
+        // Adicionar item
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const id = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const price = parseFloat(button.getAttribute('data-price'));
+
+                const existingItem = cart.find(item => item.id === id);
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({ id, name, price, quantity: 1 });
+                }
+
+                updateCart();
+
+                // Feedback
+                if (cartPanel.classList.contains('translate-x-full')) {
+                    cartPanel.classList.remove('translate-x-full');
+                    overlay.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                }
+
+                button.innerHTML = '<i class="fas fa-check mr-1"></i> Adicionado';
+                button.classList.remove('bg-amber-500', 'hover:bg-amber-600');
+                button.classList.add('bg-green-500', 'hover:bg-green-600');
+
+                setTimeout(() => {
+                    button.innerHTML = '<i class="fas fa-plus mr-1"></i> Adicionar';
+                    button.classList.remove('bg-green-500', 'hover:bg-green-600');
+                    button.classList.add('bg-amber-500', 'hover:bg-amber-600');
+                }, 1500);
+            });
+        });
+
+        // Atualizar carrinho
+        function updateCart() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="text-center py-10 text-gray-500">
+                        <i class="fas fa-shopping-cart text-4xl mb-4"></i>
+                        <p>Seu carrinho está vazio</p>
+                    </div>
+                `;
+            } else {
+                cartItems.innerHTML = '';
+                cart.forEach(item => {
+                    const itemTotal = (item.price * item.quantity).toFixed(2);
+
+                    const cartItem = document.createElement('div');
+                    cartItem.className = 'cart-item flex justify-between items-center py-4 border-b border-gray-100';
+                    cartItem.innerHTML = `
+                        <div>
+                            <h4 class="font-medium">${item.name}</h4>
+                            <div class="flex items-center mt-1">
+                                <button class="decrease-quantity text-gray-500 hover:text-amber-500 px-2" data-id="${item.id}">
+                                    <i class="fas fa-minus text-xs"></i>
+                                </button>
+                                <span class="quantity mx-2 w-8 text-center">${item.quantity}</span>
+                                <button class="increase-quantity text-gray-500 hover:text-amber-500 px-2" data-id="${item.id}">
+                                    <i class="fas fa-plus text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-bold">R$ ${itemTotal.replace('.', ',')}</span>
+                            <button class="remove-item block text-red-500 hover:text-red-700 text-sm mt-1" data-id="${item.id}">
+                                <i class="fas fa-trash-alt"></i> Remover
+                            </button>
+                        </div>
+                    `;
+                    cartItems.appendChild(cartItem);
+                });
+
+                // Eventos de quantidade
+                document.querySelectorAll('.increase-quantity').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const id = button.getAttribute('data-id');
+                        const item = cart.find(item => item.id === id);
+                        if (item) { item.quantity += 1; updateCart(); }
+                    });
+                });
+
+                document.querySelectorAll('.decrease-quantity').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const id = button.getAttribute('data-id');
+                        const item = cart.find(item => item.id === id);
+                        if (item && item.quantity > 1) { item.quantity -= 1; updateCart(); }
+                    });
+                });
+
+                document.querySelectorAll('.remove-item').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const id = button.getAttribute('data-id');
+                        cart = cart.filter(item => item.id !== id);
+                        updateCart();
+                    });
+                });
+            }
+
+            const subtotalValue = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            // Taxa de entrega só se o cliente escolher entrega
+            const deliveryFeeValue = (tipoPedidoSelecionado === "entrega" && subtotalValue > 0) ? 8 : 0;
+
+            const totalValue = subtotalValue + deliveryFeeValue;
+
+            subtotal.textContent = `R$ ${subtotalValue.toFixed(2).replace('.', ',')}`;
+            deliveryFee.textContent = `R$ ${deliveryFeeValue.toFixed(2).replace('.', ',')}`;
+            total.textContent = `R$ ${totalValue.toFixed(2).replace('.', ',')}`;
+
+            checkoutBtn.disabled = cart.length === 0;
+            checkoutBtn.classList.toggle('opacity-50', cart.length === 0);
+            checkoutBtn.classList.toggle('cursor-not-allowed', cart.length === 0);
+        }
+
+        // Modal Cliente
+        function openClienteModal(callback) {
+            const oldModal = document.getElementById('clienteModal');
+            if (oldModal) oldModal.remove();
+
+            const modal = document.createElement('div');
+            modal.id = 'clienteModal';
+            modal.className = 'fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-8 w-full max-w-md shadow-lg relative">
+                    <button id="closeClienteModal" class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl">&times;</button>
+                    <h2 class="text-2xl font-bold mb-4">Dados do Cliente</h2>
+                    <form id="clienteForm" class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 mb-1">Nome:</label>
+                            <input type="text" name="nome" required class="w-full border rounded px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-1">Telefone:</label>
+                            <input type="text" name="telefone" required class="w-full border rounded px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-1">Tipo de pedido:</label>
+                            <div class="flex gap-4">
+                                <label><input type="radio" name="tipoPedido" value="entrega" required> Entrega</label>
+                                <label><input type="radio" name="tipoPedido" value="retirada" required> Retirada</label>
+                            </div>
+                        </div>
+                        <div id="extraCampos" class="hidden">
+                            <div>
+                                <label class="block text-gray-700 mb-1">Endereço:</label>
+                                <input type="text" name="endereco" class="w-full border rounded px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-1">Forma de pagamento:</label>
+                                <select name="formaPagamento" class="w-full border rounded px-3 py-2">
+                                    <option value="Pix">Pix</option>
+                                    <option value="Dinheiro">Dinheiro</option>
+                                    <option value="Cartão">Cartão</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white py-2 rounded font-bold">Confirmar</button>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+
+            // Fechar modal
+            modal.querySelector('#closeClienteModal').onclick = () => {
+                modal.remove();
+                document.body.style.overflow = '';
+            };
+
+            // Mostrar/ocultar campos extras
+            modal.querySelectorAll('input[name="tipoPedido"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    tipoPedidoSelecionado = radio.value; 
+                    updateCart(); 
+
+                    const extra = modal.querySelector('#extraCampos');
+                    if (radio.value === 'entrega') {
+                        extra.classList.remove('hidden');
+                        extra.querySelector('input[name="endereco"]').required = true;
+                        extra.querySelector('select[name="formaPagamento"]').required = true;
+                    } else {
+                        extra.classList.add('hidden');
+                        extra.querySelector('input[name="endereco"]').required = false;
+                        extra.querySelector('select[name="formaPagamento"]').required = false;
+                    }
+                });
+            });
+
+            // Submeter formulário
+            modal.querySelector('#clienteForm').onsubmit = function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const cliente = {
+                    nome: formData.get('nome'),
+                    telefone: formData.get('telefone')
+                };
+                const tipoPedido = formData.get('tipoPedido');
+                let formaPagamento = "não especificado";
+
+                if (tipoPedido === 'entrega') {
+                    cliente.endereco = formData.get('endereco');
+                    formaPagamento = formData.get('formaPagamento');
+                }
+
+                modal.remove();
+                document.body.style.overflow = '';
+                callback(cliente, tipoPedido, formaPagamento);
+            };
+        }
+
+        // Checkout
+        checkoutBtn.addEventListener('click', async () => {
+            await new Promise((resolve) => {
+                openClienteModal(async (cliente, tipoPedido, formaPagamento) => {
+                    const pedido = {
+                        cliente: cliente,
+                        itens: cart,
+                        tipo: tipoPedido,
+                        forma_pagamento: formaPagamento,
+                    };
+
+                    console.log("📦 Enviando pedido:", pedido);
+
+                    try {
+                        const response = await fetch('/api/finalizar_pedido', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(pedido)
+                        });
+
+                        const result = await response.json();
+                        console.log("📩 Resposta do servidor:", result);
+
+                        if (result.ok) {
+                            alert('Pedido realizado com sucesso! Informe este número no campo de busca da página de acompanhamento para acompanhar seu pedido. Nº ' + result.pedido_id);
+                            window.location.href = '/acompanhamento?pedido_id=';
+                            cart = [];
+                            updateCart();
+                            cartPanel.classList.add('translate-x-full');
+                            overlay.classList.add('hidden');
+                            document.body.style.overflow = '';
+                        } else {
+                            alert('Erro ao finalizar o pedido: ' + result.error);
+                        }
+                    } catch (error) {
+                        alert('Erro na requisição: ' + error.message);
+                    }
+                    resolve();
+                });
+            });
+        });
+
+        // Filtro de categorias
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const category = button.getAttribute('data-category');
+                menuItems.forEach(item => {
+                    item.style.display = (category === 'todos' || item.getAttribute('data-category') === category) ? 'block' : 'none';
+                });
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
