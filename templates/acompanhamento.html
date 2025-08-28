@@ -133,17 +133,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (orderData.status) {
             const status = orderData.status.toLowerCase();
-            if (status.includes("preparo") || status.includes("preparação")) { progressPercentage = 50; statusText="Em preparo"; }
-            else if (status.includes("caminho") || status.includes("entrega")) { progressPercentage=75; statusText="Saiu para entrega"; }
-            else if (status.includes("entregue") || status.includes("finalizado")) { progressPercentage=100; statusText="Entregue"; }
-            else if (status.includes("pronto para retirada") || status.includes("pronto" ) ) { progressPercentage=100; statusText="Pronto para retirada"; }
+            if (status.includes("preparo") || status.includes("preparação")) { 
+                progressPercentage = 50; 
+                statusText = "Em preparo"; 
+            }
+            else if (status.includes("caminho") || status.includes("entrega")) { 
+                progressPercentage = 75; 
+                statusText = "Saiu para entrega"; 
+            }
+            else if (status.includes("entregue") || status.includes("finalizado")) { 
+                progressPercentage = 100; 
+                statusText = "Entregue"; 
+            }
+            else if (status.includes("pronto para retirada") || status.includes("pronto")) { 
+                progressPercentage = 100; 
+                statusText = "Pronto para retirada"; 
+            }
         }
 
         const dataPedido = orderData.data_pedido ? new Date(orderData.data_pedido).toLocaleString('pt-BR') : '--:--';
 
         let itemsHTML = '';
-        if (orderData.itens && orderData.itens.length>0){
-            orderData.itens.forEach(item=>{
+        if (orderData.itens && orderData.itens.length > 0) {
+            orderData.itens.forEach(item => {
                 itemsHTML += `
                 <div class="order-item flex justify-between items-start p-3 border-b border-gray-100 hover:bg-gray-50 transition">
                     <div>
@@ -151,12 +163,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="text-sm text-gray-500">Qtd: ${item.quantidade}</p>
                     </div>
                     <div class="text-right">
-                        <p class="font-medium text-gray-800">R$ ${(item.preco_unitario).toFixed(2).replace('.',',')}</p>
+                        <p class="font-medium text-gray-800">R$ ${(Number(item.preco_unitario)).toFixed(2).replace('.',',')}</p>
                     </div>
                 </div>
                 `;
             });
-        } else itemsHTML = '<p class="text-gray-500 py-4">Nenhum item encontrado</p>';
+        } else {
+            itemsHTML = '<p class="text-gray-500 py-4">Nenhum item encontrado</p>';
+        }
 
         orderInfo.innerHTML = `
         <div class="bg-white rounded-xl shadow-md p-6 mb-8">
@@ -170,15 +184,15 @@ document.addEventListener('DOMContentLoaded', function() {
             
             <!-- Status Cards -->
             <div class="grid grid-cols-4 gap-4 mb-6">
-                ${['Recebido','Em preparo','Saiu para entrega','Entregue'].map((status,i)=>{
-                    const percent = [25,50,75,100][i];
-                    const active = progressPercentage>=percent ? 'active bg-green-50 border-green-200':'bg-gray-50 border-gray-200';
-                    const color = progressPercentage>=percent ? 'bg-green-500 text-white':'bg-gray-300 text-white';
+                ${['Recebido','Em preparo','Saiu para entrega','Entregue'].map((status, i) => {
+                    const percent = [25, 50, 75, 100][i];
+                    const active = progressPercentage >= percent ? 'active bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200';
+                    const color = progressPercentage >= percent ? 'bg-green-500 text-white' : 'bg-gray-300 text-white';
                     return `<div class="status-card ${active} text-center p-3 rounded-lg border">
                         <div class="w-12 h-12 ${color} rounded-full flex items-center justify-center mx-auto mb-2">
                             <i class="fas fa-check"></i>
                         </div>
-                        <p class="font-medium ${progressPercentage>=percent?'text-green-800':'text-gray-600'}">${status}</p>
+                        <p class="font-medium ${progressPercentage >= percent ? 'text-green-800' : 'text-gray-600'}">${status}</p>
                     </div>`;
                 }).join('')}
             </div>
@@ -194,42 +208,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h3 class="font-bold text-gray-800 mb-3">Informações do Cliente</h3>
                 <p><span class="font-medium">Nome:</span> ${orderData.cliente_nome}</p>
                 <p><span class="font-medium">Telefone:</span> ${orderData.cliente_telefone || '--'}</p>
-                <p><span class="font-medium">Entrega:</span> ${orderData.tipo==='entrega'?'Entrega':'Retirada no local'}</p>
-                ${orderData.tipo==='entrega'?`<p><span class="font-medium">Endereço:</span> ${orderData.cliente_endereco}</p>`:''}
+                <p><span class="font-medium">Entrega:</span> ${orderData.tipo_entrega === 'entrega' ? 'Entrega' : 'Retirada no local'}</p>
+                ${orderData.tipo_entrega === 'entrega' ? `<p><span class="font-medium">Endereço:</span> ${orderData.cliente_endereco}</p>` : ''}
                 <p><span class="font-medium">Pagamento:</span> ${orderData.forma_pagamento || '--'}</p>
             </div>
         </div>
         `;
     }
 
-    function searchOrder(orderId){
-        if(refreshInterval) clearInterval(refreshInterval);
+    function searchOrder(orderId) {
+        if (refreshInterval) clearInterval(refreshInterval);
         searchButton.innerHTML = '<span class="loading"></span> Buscando...';
         searchButton.disabled = true;
-        fetchAndDisplay(orderId).then(()=> {
-            refreshInterval = setInterval(()=>fetchAndDisplay(orderId),5000);
-        }).finally(()=>{
+        fetchAndDisplay(orderId).then(() => {
+            refreshInterval = setInterval(() => fetchAndDisplay(orderId), 5000);
+        }).finally(() => {
             searchButton.innerHTML = '<i class="fas fa-search mr-2"></i> Buscar';
-            searchButton.disabled=false;
+            searchButton.disabled = false;
         });
     }
 
     // Eventos
-    searchButton.addEventListener('click',()=> {
+    searchButton.addEventListener('click', () => {
         const orderId = orderIdInput.value.trim();
-        if(orderId) searchOrder(orderId);
+        if (orderId) searchOrder(orderId);
         else showError('Digite o número do pedido');
     });
-    orderIdInput.addEventListener('keypress',e=>{if(e.key==='Enter') searchButton.click();});
+    orderIdInput.addEventListener('keypress', e => { if (e.key === 'Enter') searchButton.click(); });
 
     // Busca automática via URL
     const urlParams = new URLSearchParams(window.location.search);
     const orderIdFromUrl = urlParams.get('pedido');
-    if(orderIdFromUrl){
-        orderIdInput.value=orderIdFromUrl;
+    if (orderIdFromUrl) {
+        orderIdInput.value = orderIdFromUrl;
         searchOrder(orderIdFromUrl);
     }
 });
 </script>
+
 </body>
 </html>
